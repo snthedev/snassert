@@ -1,0 +1,20 @@
+# Dependencies (fetched by build.bat)
+tests/thirdparty/
+.third-party/
+
+# Build output
+build/
+
+# Visual Studio local cache / user files
+.vs/
+*.user
+
+# Local ideas / plans / todos (not published)
+idea/
+
+# Logs
+*.log
+
+# OS junk
+Thumbs.db
+Desktop.ini

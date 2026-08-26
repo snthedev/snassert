@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="snassert/snassert.vcxproj" Id="2888c6b4-52a4-4d16-ad3c-9164cdacdfee" />
+  <Project Path="tests/snassert_tests.vcxproj" Id="9b3f27d8-6c04-4a71-a582-e40bf19d3c67" />
+</Solution>
