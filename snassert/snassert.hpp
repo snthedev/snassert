@@ -85,8 +85,10 @@ namespace sn::assert
             static void defaultBreak() noexcept
             {
 #if defined(_MSC_VER)
+                // !!! SEE CONSOLE FOR BREAK DETAILS !!!
                 __debugbreak();
 #else
+                // !!! SEE CONSOLE FOR BREAK DETAILS !!!
                 std::abort();
 #endif
             }
