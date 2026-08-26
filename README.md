@@ -180,9 +180,19 @@ build.bat
 
 ### Manual equivalent
 
+`msbuild` is not on the system PATH by default — locate it via `vswhere`
+(included with Visual Studio), or run from the **Developer PowerShell for VS**:
+
 ```powershell
+# fetch GoogleTest
 git clone --depth 1 --branch v1.17.0 https://github.com/google/googletest.git tests\thirdparty\googletest
-msbuild tests\snassert_tests.vcxproj /p:Configuration=Debug /p:Platform=x64
+
+# locate MSBuild (works from any PowerShell)
+$msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
+    -latest -prerelease -products * -requires Microsoft.Component.MSBuild `
+    -find MSBuild\**\Bin\MSBuild.exe | Select-Object -First 1
+
+& $msbuild tests\snassert_tests.vcxproj /p:Configuration=Debug /p:Platform=x64
 build\snassert_tests_d.exe
 ```
 
