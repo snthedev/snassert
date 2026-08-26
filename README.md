@@ -163,6 +163,13 @@ binary builds and runs with zero assertions to exercise, by design.
 **Prerequisites:** Windows, Visual Studio 2022/2026 with the C++ workload
 (MSVC v145 toolset), Git.
 
+> All commands below assume the repository is cloned and your shell is in its root:
+>
+> ```bat
+> git clone https://github.com/snthedev/snassert.git
+> cd snassert
+> ```
+
 ### One-shot way
 
 ```bat
