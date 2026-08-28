@@ -1,8 +1,11 @@
 # snassert
 
+![CI](https://github.com/snthedev/snassert/actions/workflows/ci.yml/badge.svg)
+
 A drop-in replacement for the standard C++ `<cassert>` macro with **human-friendly failure reports**: a custom message, actionable tips, colored terminal output — and full testability.
 
-Built as a single header-only file. Requires **C++23** and **MSVC (Visual Studio 2026, toolset v145)** on Windows.
+Built as a single header-only file. Requires **C++23**; verified on MSVC
+(Visual Studio 2026), GCC 15 and Clang 21 (via MSYS2/ucrt64) on Windows.
 
 Status: MVP complete, **13 tests green** (Debug, x64); Release compiles clean
 (assertions compiled out by design).
@@ -160,8 +163,9 @@ binary builds and runs with zero assertions to exercise, by design.
 
 ## Build
 
-**Prerequisites:** Windows, Visual Studio 2022/2026 with the C++ workload
-(MSVC v145 toolset), Git.
+**Prerequisites:** CMake 3.25+, a C++23 compiler (MSVC 19.3x / GCC 14+ /
+Clang 17+), Git. Verified on Windows (MSVC, GCC, Clang via MSYS2) —
+Ubuntu is expected to work as-is.
 
 > All commands below assume the repository is cloned and your shell is in its root:
 >
@@ -170,44 +174,21 @@ binary builds and runs with zero assertions to exercise, by design.
 > cd snassert
 > ```
 
-### One-shot way
+### CMake
 
-```bat
-build.bat
+```bash
+cmake -B build                     # configure (FetchContent pulls GoogleTest v1.17.0)
+cmake --build build --config Debug
+ctest --test-dir build -C Debug --output-on-failure
 ```
 
-`build.bat [Debug|Release]` does everything:
+Single-config generators (Ninja, Makefiles) take the configuration at the
+configure step (`-DCMAKE_BUILD_TYPE=Debug`); for Visual Studio generators
+pass `--config` to the build/ctest steps as shown above.
 
-1. fetches GoogleTest v1.17.0 into `tests\thirdparty\` on first run (skipped if present);
-2. locates MSBuild via `vswhere`;
-3. builds the tests (x64);
-4. runs them.
-
-`build.bat fetch` only pulls the dependencies without building.
-
-### Manual equivalent
-
-`msbuild` is not on the system PATH by default — locate it via `vswhere`
-(included with Visual Studio), or run from the **Developer PowerShell for VS**:
-
-```powershell
-# fetch GoogleTest
-git clone --depth 1 --branch v1.17.0 https://github.com/google/googletest.git tests\thirdparty\googletest
-
-# locate MSBuild (works from any PowerShell)
-$msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
-    -latest -prerelease -products * -requires Microsoft.Component.MSBuild `
-    -find MSBuild\**\Bin\MSBuild.exe | Select-Object -First 1
-
-& $msbuild tests\snassert_tests.vcxproj /p:Configuration=Debug /p:Platform=x64
-build\snassert_tests_d.exe
-```
-
-Or open `snassert.slnx` in Visual Studio and run the `snassert_tests` project.
-
-Test binaries land in `build\`: `snassert_tests_d.exe` (Debug) /
-`snassert_tests.exe` (Release). Nothing of the fetched dependencies gets
-committed: `tests\thirdparty\` is gitignored.
+Tests are built by default; disable with `-DBUILD_TESTS=OFF`.
+Under `NDEBUG` (Release) the assertions are compiled out by design, so the
+test binary runs zero tests — meaningful results come from Debug builds.
 
 To use the library in your own project, just add the repository root to your
 include paths and `#include <snassert/snassert.hpp>`.
@@ -216,15 +197,12 @@ include paths and `#include <snassert/snassert.hpp>`.
 
 ```
 snassert/
-├── build.bat                      # one-shot fetch + build + test runner
-├── snassert.slnx                  # solution (x64 Debug/Release)
+├── .github/workflows/ci.yml     # CI: Windows + Ubuntu, Debug + Release
+├── CMakeLists.txt               # CMake build (library + tests via FetchContent)
 ├── snassert/
-│   ├── snassert.hpp               # the entire library
-│   └── snassert.vcxproj           # project for IDE use (header-only lib)
+│   └── snassert.hpp             # the entire library
 └── tests/
-    ├── snassert_tests.cpp         # GoogleTest-based suite
-    ├── snassert_tests.vcxproj     # builds tests + gtest-all.cc in one go
-    └── thirdparty/                # GoogleTest lands here via build.bat (gitignored)
+    └── snassert_tests.cpp       # GoogleTest-based suite
 ```
 
 ## Known limitations

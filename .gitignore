@@ -1,9 +1,12 @@
-# Dependencies (fetched by build.bat)
+# Dependencies (fetched by CMake FetchContent)
 tests/thirdparty/
 .third-party/
 
 # Build output
 build/
+build-cmake/
+build-gcc/
+build-clang/
 
 # Visual Studio local cache / user files
 .vs/
